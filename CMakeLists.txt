@@ -48,7 +48,25 @@ find_package( Eigen3 REQUIRED )
 
 # Basic includes / libraries
 set(REQUIRED_LIBRARIES ${EIGEN3_LIBRARIES} )
-set(REQUIRED_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS})
+set(REQUIRED_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+
+
+list(APPEND CMAKE_PREFIX_PATH ${GLUT_ROOT_PATH}/include
+                               ${DEVIL_ROOT}
+                               ${GLEW_ROOT}/include
+                               ${ASSIMP_ROOT}/include
+                               ${Pangolin_ROOT}/include
+                               )
+list(APPEND CMAKE_PREFIX_PATH ${GLUT_ROOT_PATH}/lib
+                               ${GLEW_ROOT}/lib
+                               ${DEVIL_ROOT}/lib
+                               ${ASSIMP_ROOT}/lib
+                               ${Pangolin_ROOT}/lib
+                               )
+set(Pangolin_DIR ${Pangolin_ROOT})
+
+message("pangolin " ${Pangolin_DIR})
+
 
 if(NOT _ANDROID_)
     find_package( OpenGL REQUIRED )
@@ -195,6 +213,9 @@ endif()
 find_package( DevIL REQUIRED QUIET )
 if(IL_FOUND)
   set(HAVE_DEVIL 1)
+  message("il " ${IL_INCLUDE_DIR})
+  message("il libs " ${ILU_LIBRARIES})
+
   list(APPEND REQUIRED_INCLUDE_DIRS "${IL_INCLUDE_DIR};${IL_INCLUDE_DIR}/.." )
   list(APPEND REQUIRED_LIBRARIES "${IL_LIBRARIES};${ILU_LIBRARIES};${ILUT_LIBRARIES}" )
 else()
@@ -229,12 +250,18 @@ else()
 endif()
 
 # Find Pangolin (https://github.com/stevenlovegrove/Pangolin)
-find_package(Pangolin CONFIG REQUIRED)
+find_package(Pangolin CONFIG REQUIRED 
+                      #NO_SYSTEM_ENVIRONMENT_PATH
+                      #NO_CMAKE_PACKAGE_REGISTRY
+                      )
 if(Pangolin_FOUND)
   set(HAVE_PANGOLIN 1)
   list(APPEND REQUIRED_INCLUDE_DIRS ${Pangolin_INCLUDE_DIRS})
   list(APPEND REQUIRED_LIBRARIES ${Pangolin_LIBRARIES})
 endif()
+
+message("pangolin " ${Pangolin_DIR})
+message("pangolin " ${Pangolin_LIBRARIES})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/SceneGraph/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/SceneGraph/SceneGraphConfig.h)
 
@@ -265,7 +292,7 @@ IF(MSVC)
     GENERATE_EXPORT_HEADER( ${LIBRARY_NAME}
         BASE_NAME ${LIBRARY_NAME_CAPS}
         EXPORT_MACRO_NAME ${LIBRARY_NAME_CAPS}_EXPORT
-        EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/../${LIBRARY_NAME}/${LIBRARY_NAME}_export.h"
+        EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/include/${LIBRARY_NAME}/${LIBRARY_NAME}_export.h"
         STATIC_DEFINE ${LIBRARY_NAME_CAPS}_BUILT_AS_STATIC
     )
 ENDIF()
