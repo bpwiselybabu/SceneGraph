@@ -65,7 +65,6 @@ enum RenderMode
 class SCENEGRAPH_EXPORT GLObject
 {
     public:
-
         /////////////////////////////////
         // GLObject Constructors
         /////////////////////////////////
@@ -226,6 +225,8 @@ class SCENEGRAPH_EXPORT GLObject
         static int g_nHandleCounter;
 
         GLint                          m_nDisplayList;
+        public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 inline bool GLObject::Mouse(int, const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d&, bool, int, int) {

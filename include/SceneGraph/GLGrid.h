@@ -9,6 +9,7 @@ namespace SceneGraph {
 
 class GLGrid : public GLObject {
  public:
+ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   GLGrid(int num_lines = 50,
          float line_spacing = 2.0,
          bool perceptable = false);
