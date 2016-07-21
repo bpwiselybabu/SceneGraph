@@ -63,7 +63,7 @@ list(APPEND CMAKE_PREFIX_PATH ${GLUT_ROOT_PATH}/lib
                                ${ASSIMP_ROOT}/lib
                                ${Pangolin_ROOT}/lib
                                )
-set(Pangolin_DIR ${Pangolin_ROOT})
+set("Pangolin_ROOT" ${ASSIMP_ROOT})
 
 message("pangolin " ${Pangolin_DIR})
 
