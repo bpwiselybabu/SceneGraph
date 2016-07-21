@@ -273,17 +273,17 @@ include_directories( ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR} )
 add_library( scenegraph ${SCENEGRAPH_SRCS} )
 target_link_libraries( scenegraph ${REQUIRED_LIBRARIES} )
 
-# install_package(
-#   PKG_NAME SceneGraph
-#   LIB_NAME scenegraph
-#   VERSION ${VERSION}
-#   DESCRIPTION "Allows for the viewing of SceneGraphs"
-#   INSTALL_INCLUDE_DIR true
-#   INSTALL_GENERATED_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/include/SceneGraph/SceneGraphConfig.h
-#   DESTINATION ${CMAKE_INSTALL_PREFIX}
-#   INCLUDE_DIRS ${REQUIRED_INCLUDE_DIRS}
-#   LINK_LIBS ${REQUIRED_LIBRARIES}
-#   )
+install_package(
+  PKG_NAME SceneGraph
+  LIB_NAME scenegraph
+  VERSION ${VERSION}
+  DESCRIPTION "Allows for the viewing of SceneGraphs"
+  INSTALL_INCLUDE_DIR true
+  INSTALL_GENERATED_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/include/SceneGraph/SceneGraphConfig.h
+  DESTINATION ${CMAKE_INSTALL_PREFIX}
+  INCLUDE_DIRS ${REQUIRED_INCLUDE_DIRS}
+  LINK_LIBS ${REQUIRED_LIBRARIES}
+  )
 
 ## Generate symbol export helper header on MSVC
 IF(MSVC)
@@ -292,16 +292,10 @@ IF(MSVC)
     GENERATE_EXPORT_HEADER( ${LIBRARY_NAME}
         BASE_NAME ${LIBRARY_NAME_CAPS}
         EXPORT_MACRO_NAME ${LIBRARY_NAME_CAPS}_EXPORT
-        EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/include/${LIBRARY_NAME}/${LIBRARY_NAME}_export.h"
+        EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/../${LIBRARY_NAME}/${LIBRARY_NAME}_export.h"
         STATIC_DEFINE ${LIBRARY_NAME_CAPS}_BUILT_AS_STATIC
     )
 ENDIF()
-
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "/EHs ${CMAKE_CXX_FLAGS}")
-elseif(CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations ${CMAKE_CXX_FLAGS}")
-endif()
 
 set( SCENEGRAPH_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 set( SCENEGRAPH_LIBRARIES ${REQUIRED_LIBRARIES} scenegraph )
@@ -314,39 +308,4 @@ endif()
 include(${CMAKE_MODULE_PATH}/cmake_uninstall.cmake.in)
 
 add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-
-set( CMAKECONFIG_INSTALL_DIR lib/cmake/${PROJECT_NAME} )
-file( RELATIVE_PATH REL_INCLUDE_DIR
-    "${CMAKE_INSTALL_PREFIX}/${CMAKECONFIG_INSTALL_DIR}"
-    "${CMAKE_INSTALL_PREFIX}/include"
-)
-
-if( EXPORT_${PROJECT_NAME} )
-  export( PACKAGE ${PROJECT_NAME} )
-endif()
-
-#######################################################
-## Install headers / targets
-
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/${LIBRARY_NAME}/SceneGraphConfig.h"
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${LIBRARY_NAME}
-)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/${LIBRARY_NAME}/${LIBRARY_NAME}_export.h"
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${LIBRARY_NAME}
-)
-# install(DIRECTORY ${INCDIR}
-#   DESTINATION ${CMAKE_INSTALL_PREFIX}/include
-# )
-
-install(DIRECTORY include/
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include
-)
-
-
-install(TARGETS ${LIBRARY_NAME}
-  EXPORT ${PROJECT_NAME}Targets
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
+COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)

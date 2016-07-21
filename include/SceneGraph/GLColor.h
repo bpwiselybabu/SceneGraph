@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cmath>
 #include <SceneGraph/GLinclude.h>
-#include <Eigen/core>
+//#include <Eigen/core>
 
 namespace SceneGraph {
 
