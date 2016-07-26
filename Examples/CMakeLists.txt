@@ -4,7 +4,7 @@ ADD_SUBDIRECTORY(DisplayMultiView)
 
 if(NOT _ANDROID_)
     ADD_SUBDIRECTORY(DisplayShadowTest)
-    ADD_SUBDIRECTORY(ModelPhysics)
+    #ADD_SUBDIRECTORY(ModelPhysics)
     ADD_SUBDIRECTORY(Widgets)
     ADD_SUBDIRECTORY(ModelViewer)
 
