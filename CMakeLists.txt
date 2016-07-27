@@ -73,47 +73,6 @@ if(NOT _ANDROID_)
     find_package( GLEW REQUIRED )
     list(APPEND REQUIRED_INCLUDE_DIRS "${OPENGL_INCLUDE_DIR};${GLEW_INCLUDE_DIR}" )
     list(APPEND REQUIRED_LIBRARIES "${OPENGL_LIBRARIES};${GLEW_LIBRARY}" )
-
-    # While Pangolin doesn't require GLUT anymore, SceneGraph still does.
-    # These are the checks to properly include GLUT at the linker stage.
-    find_package( FREEGLUT QUIET)
-    find_package( GLUT QUIET)
-
-    if(_OSX_)
-      INCLUDE(CheckCXXSourceRuns)
-      set(CMAKE_REQUIRED_LIBRARIES ${GLUT_LIBRARY})
-      CHECK_CXX_SOURCE_RUNS("#include <GLUT/glut.h>\n int main () {return glutGetProcAddress(\"glutScrollFunc\") ? 0 : -1;};" HAVE_MODIFIED_OSXGLUT)
-      if(NOT HAVE_MODIFIED_OSXGLUT)
-            message(STATUS "Install modified osxglut for smooth scroll support / pinch / zoom.")
-            message(STATUS "(https://github.com/stevenlovegrove/osxglut)")
-      endif()
-    endif()
-
-    # Prefer OSX_MODIFIED_GLUT > FREEGLUT > GLUT
-    option(FORCE_FREEGLUT "Force use of freeglut if found." OFF)
-    if(FREEGLUT_FOUND AND (NOT HAVE_MODIFIED_OSXGLUT OR FORCE_FREEGLUT))
-      set(HAVE_FREEGLUT 1)
-      list(APPEND REQUIRED_INCLUDE_DIRS  ${FREEGLUT_INCLUDE_DIR} )
-      list(APPEND REQUIRED_LIBRARIES ${FREEGLUT_LIBRARY} )
-    elseif(GLUT_FOUND)
-      list(APPEND REQUIRED_INCLUDE_DIRS  ${GLUT_INCLUDE_DIR} )
-      list(APPEND REQUIRED_LIBRARIES ${GLUT_LIBRARY} )
-      if(_OSX_)
-        set(HAVE_APPLE_OPENGL_FRAMEWORK 1)
-        list(APPEND REQUIRED_LIBRARIES "-framework GLUT" )
-        if(NOT HAVE_MODIFIED_OSXGLUT)
-            message(STATUS "Using Apple Framework GLUT.")
-            message(STATUS "Install Freeglut or modified osxglut for scroll support.")
-        endif()
-      endif()
-    endif()
-
-    if(FREEGLUT_FOUND OR GLUT_FOUND)
-        set(HAVE_GLUT 1)
-        list(APPEND HEADERS ${INCDIR}/display_glut.h )
-        list(APPEND SOURCES ${SRCDIR}/display_glut.cpp )
-        message(STATUS "Glut Found and Enabled")
-    endif()
 else()
     find_package(GLUES REQUIRED)
     list(APPEND REQUIRED_LIBRARIES "${GLUES_LIBRARY}" )
@@ -213,9 +172,6 @@ endif()
 find_package( DevIL REQUIRED QUIET )
 if(IL_FOUND)
   set(HAVE_DEVIL 1)
-  message("il " ${IL_INCLUDE_DIR})
-  message("il libs " ${ILU_LIBRARIES})
-
   list(APPEND REQUIRED_INCLUDE_DIRS "${IL_INCLUDE_DIR};${IL_INCLUDE_DIR}/.." )
   list(APPEND REQUIRED_LIBRARIES "${IL_LIBRARIES};${ILU_LIBRARIES};${ILUT_LIBRARIES}" )
 else()
@@ -250,18 +206,12 @@ else()
 endif()
 
 # Find Pangolin (https://github.com/stevenlovegrove/Pangolin)
-find_package(Pangolin CONFIG REQUIRED 
-                      #NO_SYSTEM_ENVIRONMENT_PATH
-                      #NO_CMAKE_PACKAGE_REGISTRY
-                      )
+find_package(Pangolin CONFIG REQUIRED)
 if(Pangolin_FOUND)
   set(HAVE_PANGOLIN 1)
   list(APPEND REQUIRED_INCLUDE_DIRS ${Pangolin_INCLUDE_DIRS})
   list(APPEND REQUIRED_LIBRARIES ${Pangolin_LIBRARIES})
 endif()
-
-message("pangolin " ${Pangolin_DIR})
-message("pangolin " ${Pangolin_LIBRARIES})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/SceneGraph/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/SceneGraph/SceneGraphConfig.h)
 
@@ -316,38 +266,3 @@ include(${CMAKE_MODULE_PATH}/cmake_uninstall.cmake.in)
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-
-set( CMAKECONFIG_INSTALL_DIR lib/cmake/${PROJECT_NAME} )
-file( RELATIVE_PATH REL_INCLUDE_DIR
-    "${CMAKE_INSTALL_PREFIX}/${CMAKECONFIG_INSTALL_DIR}"
-    "${CMAKE_INSTALL_PREFIX}/include"
-)
-
-if( EXPORT_${PROJECT_NAME} )
-  export( PACKAGE ${PROJECT_NAME} )
-endif()
-
-#######################################################
-## Install headers / targets
-
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/${LIBRARY_NAME}/SceneGraphConfig.h"
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${LIBRARY_NAME}
-)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/${LIBRARY_NAME}/${LIBRARY_NAME}_export.h"
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${LIBRARY_NAME}
-)
-# install(DIRECTORY ${INCDIR}
-#   DESTINATION ${CMAKE_INSTALL_PREFIX}/include
-# )
-
-install(DIRECTORY include/
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include
-)
-
-
-install(TARGETS ${LIBRARY_NAME}
-  EXPORT ${PROJECT_NAME}Targets
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
