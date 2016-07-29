@@ -12,7 +12,7 @@ FIND_PATH( ASSIMP_INCLUDE_DIR assimp/mesh.h
 )
 
 
-FIND_LIBRARY( ASSIMP_LIBRARY assimp assimp-vc130-mtd
+FIND_LIBRARY( ASSIMP_LIBRARY NAMES assimp assimp-vc130-mt assimp-vc130-mtd
   /usr/lib64
   /usr/lib
   /usr/local/lib
