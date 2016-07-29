@@ -160,8 +160,14 @@ class ImageView : public pangolin::View {
 
     glDisable(GL_TEXTURE_2D);
 
+    //gl.glDisable(GL_LIGHTING);
+    //gl.glDisable(GL_COLOR_MATERIAL);
+    //gl.glDisable(GL_BLEND);
+    gl.glEnable(GL_DEPTH_TEST);
     // Call base View implementation
     pangolin::View::Render();
+
+
   }
 
   template<class T>
